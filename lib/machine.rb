@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # A vending machine
 class Machine
   def initialize(products, coins)
@@ -6,8 +8,8 @@ class Machine
   end
 
   def print_products
-    @products.each do |product|
-      puts "Item: #{product.name} Qty: #{product.quantity} "\
+    @products.each_with_index do |product, index|
+      puts "Code: #{index} Item: #{product.name} Qty: #{product.quantity} "\
            "Price: #{product.price}"
     end
   end

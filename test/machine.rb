@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'machine'
 require 'transaction'
 require 'minitest/autorun'
@@ -18,8 +20,8 @@ describe Machine do
         @machine.print_products
       end
 
-      assert(out[0].include?('Item: chocolate one Qty: 2 Price: 50'))
-      assert(out[0].include?('Item: chocolate two Qty: 3 Price: 51'))
+      assert(out[0].include?('Code: 0 Item: chocolate one Qty: 2 Price: 50'))
+      assert(out[0].include?('Code: 1 Item: chocolate two Qty: 3 Price: 51'))
     end
   end
 
