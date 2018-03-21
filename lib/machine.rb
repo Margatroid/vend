@@ -11,4 +11,8 @@ class Machine
            "Price: #{product.price}"
     end
   end
+
+  def create_transaction
+    Transaction.new
+  end
 end
