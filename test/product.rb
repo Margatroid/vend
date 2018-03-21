@@ -1,4 +1,4 @@
-require_relative '../lib/product'
+require 'product'
 require 'minitest/autorun'
 
 describe Product do

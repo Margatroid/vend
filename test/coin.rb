@@ -1,4 +1,4 @@
-require_relative '../lib/coin'
+require 'coin'
 require 'minitest/autorun'
 
 describe Coin do
