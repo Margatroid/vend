@@ -10,10 +10,12 @@ describe Machine do
       ]
 
       machine = Machine.new(products_to_load, [])
-      out = machine.print_products do
-        assert(out.include?('Item: chocolate one Qty: 2 Price: 50'))
-        assert(out.include?('Item: chocolate two Qty: 3 Price: 51'))
+      out = capture_io do
+        machine.print_products
       end
+
+      assert(out[0].include?('Item: chocolate one Qty: 2 Price: 50'))
+      assert(out[0].include?('Item: chocolate two Qty: 3 Price: 51'))
     end
   end
 end
