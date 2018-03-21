@@ -13,6 +13,6 @@ class Machine
   end
 
   def create_transaction
-    Transaction.new
+    Transaction.new(self)
   end
 end

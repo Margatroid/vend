@@ -25,7 +25,9 @@ describe Machine do
 
   describe 'transaction process' do
     it 'will start a transaction' do
-      assert_instance_of(Transaction, @machine.create_transaction)
+      transaction = @machine.create_transaction
+      assert_instance_of(Transaction, transaction)
+      assert_equal(@machine, transaction.instance_variable_get(:@machine))
     end
   end
 end
