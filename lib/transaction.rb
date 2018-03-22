@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'aasm'
+require 'coin'
 
 # A transaction state machine
 class Transaction
@@ -13,10 +14,15 @@ class Transaction
     event :select_product do
       transitions from: :idle, to: :awaiting_payment, guard: :product_selected?
     end
+
+    event :insert_coin do
+      transitions from: :awaiting_payment, to: :idle, guard: :has_paid?
+    end
   end
 
   def initialize(machine)
     @machine = machine
+    @balance = 0
     @errors = []
   end
 
@@ -40,7 +46,9 @@ class Transaction
     when :awaiting_payment
       <<~HEREDOC
         #{@errors.slice(0, @errors.length).join("\n")}
-        You have selected #{@selected_product.name}.
+        You have selected #{@selected_product.name} which costs #{@selected_product.price}.
+        You have paid #{@balance + @selected_product.price} so far.
+        Enter a coin denomination in pence (#{Coin.valid_denominations.join(', ')}) to pay:
       HEREDOC
     end
   end
@@ -50,6 +58,9 @@ class Transaction
     when :idle
       @product_code = text
       select_product
+    when :awaiting_payment
+      @coin = Coin.valid_denominations.includes?(text) ? Coin.new(text) : nil
+      insert_coin
     end
   end
 
@@ -61,11 +72,24 @@ class Transaction
     return false unless @selected_product
 
     if @selected_product.quantity.positive?
+      @balance -= @selected_product.price
       @errors = []
       true
     else
       @errors = ["Product #{@selected_product.name} has ran out"]
       false
+    end
+  end
+
+  def paid?
+    @errors = ['You must enter a valid coin denomination']
+    return false unless @coin
+    @balance += @coin.denomination
+
+    if @balance.positive?
+      # Return change
+    else
+      # Transition to next state as the user has paid.
     end
   end
 end
