@@ -16,12 +16,9 @@ describe Machine do
 
   describe 'machine status' do
     it 'will print a list of products' do
-      out = capture_io do
-        @machine.print_products
-      end
-
-      assert(out[0].include?('Code: 0 Item: chocolate one Qty: 2 Price: 50'))
-      assert(out[0].include?('Code: 1 Item: chocolate two Qty: 3 Price: 51'))
+      products = @machine.formatted_products
+      assert(products.include?('Code: 0 Item: chocolate one Qty: 2 Price: 50'))
+      assert(products.include?('Code: 1 Item: chocolate two Qty: 3 Price: 51'))
     end
   end
 

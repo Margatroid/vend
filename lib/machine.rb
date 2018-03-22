@@ -7,11 +7,12 @@ class Machine
     @coins = coins
   end
 
-  def print_products
-    @products.each_with_index do |product, index|
-      puts "Code: #{index} Item: #{product.name} Qty: #{product.quantity} "\
-           "Price: #{product.price}"
+  def formatted_products
+    p = @products.map.with_index do |product, index|
+      "Code: #{index} Item: #{product.name} "\
+      "Qty: #{product.quantity} Price: #{product.price}"
     end
+    p.join("\n")
   end
 
   def create_transaction
