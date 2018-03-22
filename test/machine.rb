@@ -17,8 +17,8 @@ describe Machine do
   describe 'machine status' do
     it 'will print a list of products' do
       products = @machine.formatted_products
-      assert(products.include?('Code: 0 Item: chocolate one Qty: 2 Price: 50'))
-      assert(products.include?('Code: 1 Item: chocolate two Qty: 3 Price: 51'))
+      assert(products.include?('Code: 1 Item: chocolate one Qty: 2 Price: 50'))
+      assert(products.include?('Code: 2 Item: chocolate two Qty: 3 Price: 51'))
     end
   end
 

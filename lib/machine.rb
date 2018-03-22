@@ -9,7 +9,7 @@ class Machine
 
   def formatted_products
     p = @products.map.with_index do |product, index|
-      "Code: #{index} Item: #{product.name} "\
+      "Code: #{index + 1} Item: #{product.name} "\
       "Qty: #{product.quantity} Price: #{product.price}"
     end
     p.join("\n")
