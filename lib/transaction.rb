@@ -60,10 +60,11 @@ class Transaction
     @errors = ["Product with code #{@product_code} does not exist"]
     return false unless @selected_product
 
-    if @selected_product.quantity
+    if @selected_product.quantity.positive?
       @errors = []
       true
     else
+      @errors = ["Product #{@selected_product.name} has ran out"]
       false
     end
   end
