@@ -3,6 +3,7 @@ GEM
   specs:
     aasm (4.12.3)
       concurrent-ruby (~> 1.0)
+    byebug (10.0.1)
     concurrent-ruby (1.0.5)
     minitest (5.11.3)
     rake (12.3.0)
@@ -12,6 +13,7 @@ PLATFORMS
 
 DEPENDENCIES
   aasm
+  byebug
   minitest
   rake
 
