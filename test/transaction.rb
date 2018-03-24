@@ -38,6 +38,12 @@ describe Transaction do
   end
 
   describe 'product selection validation' do
+    it 'will not continue without a product code' do
+      @transaction.input
+      expected = 'You must enter a product code'
+      assert(@transaction.prompt.include?(expected))
+    end
+
     it 'will not accept invalid product codes' do
       @transaction.input(999)
       expected = 'Product with code 999 does not exist'
@@ -46,7 +52,7 @@ describe Transaction do
 
     it 'will tell you if a product has ran out' do
       @transaction.input(3)
-      expected = 'Product chocolate three has ran out'
+      expected = 'Product has sold out'
       assert(@transaction.prompt.include?(expected))
     end
   end

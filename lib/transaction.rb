@@ -9,11 +9,20 @@ class Transaction
 
   aasm whiny_transitions: false do
     state :idle, initial: true
+
+    state :no_product_selected
+    state :invalid_product_selected
+    state :product_sold_out
+
     state :awaiting_payment
     state :finished
 
-    event :select_product do
-      transitions from: :idle, to: :awaiting_payment, guard: :product_selected?
+    event :input_product_code do
+      from_states = %i[idle no_product_selected invalid_product_selected product_sold_out]
+      transitions from: from_states, to: :no_product_selected, unless: :product_selected?
+      transitions from: from_states, to: :invalid_product_selected, unless: :product_valid?
+      transitions from: from_states, to: :product_sold_out, unless: :product_in_stock?
+      transitions from: from_states, to: :awaiting_payment, after: :select_product
     end
 
     event :insert_coin do
@@ -37,6 +46,21 @@ class Transaction
         #{@machine.formatted_products}
         Please enter the code of the product that you want:
       HEREDOC
+    when :no_product_selected
+      <<~HEREDOC
+        You must enter a product code.
+        Please enter the code of the product that you want:
+      HEREDOC
+    when :invalid_product_selected
+      <<~HEREDOC
+        Product with code #{@product_code} does not exist.
+        Please enter the code of the product that you want:
+      HEREDOC
+    when :product_sold_out
+      <<~HEREDOC
+        Product has sold out.
+        Please enter the code of the product that you want:
+      HEREDOC
     when :awaiting_payment
       <<~HEREDOC
         #{@errors.slice(0, @errors.length).join("\n")}
@@ -51,11 +75,11 @@ class Transaction
     end
   end
 
-  def input(text)
+  def input(text = nil)
     case aasm.current_state
-    when :idle
+    when :idle, :no_product_selected, :invalid_product_selected, :product_sold_out
       @product_code = text
-      select_product
+      input_product_code
     when :awaiting_payment
       begin
         @coin = Coin.new(text)
@@ -66,20 +90,20 @@ class Transaction
   end
 
   def product_selected?
-    @errors = ['You must enter a product code.']
-    return false unless @product_code
-    @selected_product = @machine.products[@product_code - 1]
-    @errors = ["Product with code #{@product_code} does not exist"]
-    return false unless @selected_product
+    !@product_code.nil?
+  end
 
-    if @selected_product.quantity.positive?
-      @balance -= @selected_product.price
-      @errors = []
-      true
-    else
-      @errors = ["Product #{@selected_product.name} has ran out"]
-      false
-    end
+  def product_valid?
+    !@machine.products[@product_code - 1].nil?
+  end
+
+  def product_in_stock?
+    @machine.products[@product_code - 1].quantity.positive?
+  end
+
+  def select_product
+    @selected_product = @machine.products[@product_code - 1]
+    @balance -= @selected_product.price
   end
 
   def paid?
