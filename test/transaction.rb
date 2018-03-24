@@ -32,7 +32,7 @@ describe Transaction do
       assert(@transaction.prompt.include?(expected))
 
       @transaction.input(1)
-      expected = 'You have received a chocolate two'
+      expected = 'An item has been vended'
       assert(@transaction.prompt.include?(expected))
     end
   end

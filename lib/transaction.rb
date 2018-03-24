@@ -9,12 +9,14 @@ class Transaction
 
   aasm whiny_transitions: false do
     state :idle, initial: true
-
     state :no_product_selected
     state :invalid_product_selected
     state :product_sold_out
 
+    state :invalid_coin_inserted
     state :awaiting_payment
+    state :paid_with_change
+    state :paid_exact
     state :finished
 
     event :input_product_code do
@@ -26,14 +28,17 @@ class Transaction
     end
 
     event :insert_coin do
-      transitions from: :awaiting_payment, to: :finished, guard: :paid?
+      from_states = %i[awaiting_payment invalid_coin_inserted]
+      transitions from: from_states, to: :invalid_coin_inserted, unless: :coin_valid?
+      transitions from: from_states, to: :awaiting_payment, unless: :paid?
+      transitions from: from_states, to: :paid_with_change, if: :require_change?
+      transitions from: from_states, to: :paid_exact
     end
   end
 
   def initialize(machine)
     @machine = machine
     @balance = 0
-    @errors = []
   end
 
   # Display prompt for current state
@@ -41,7 +46,6 @@ class Transaction
     case aasm.current_state
     when :idle
       <<~HEREDOC
-        #{@errors.slice(0, @errors.length).join("\n")}
         This vending machine contains the following products:
         #{@machine.formatted_products}
         Please enter the code of the product that you want:
@@ -53,7 +57,7 @@ class Transaction
       HEREDOC
     when :invalid_product_selected
       <<~HEREDOC
-        Product with code #{@product_code} does not exist.
+        Product with code #{@input} does not exist.
         Please enter the code of the product that you want:
       HEREDOC
     when :product_sold_out
@@ -61,12 +65,25 @@ class Transaction
         Product has sold out.
         Please enter the code of the product that you want:
       HEREDOC
+    when :invalid_coin_inserted
+      <<~HEREDOC
+        You must enter a valid coin denomination.
+        Enter a coin denomination in pence (#{Coin::VALID_DENOMINATIONS.join(', ')}) to pay:
+      HEREDOC
     when :awaiting_payment
       <<~HEREDOC
-        #{@errors.slice(0, @errors.length).join("\n")}
         You have selected #{@selected_product.name} which costs #{@selected_product.price}.
         You have paid #{@balance + @selected_product.price} so far.
         Enter a coin denomination in pence (#{Coin::VALID_DENOMINATIONS.join(', ')}) to pay:
+      HEREDOC
+    when :paid_with_change
+      <<~HEREDOC
+        You have been offered #{@change} in change.
+        An item has been vended.
+      HEREDOC
+    when :paid_exact
+      <<~HEREDOC
+        An item has been vended.
       HEREDOC
     when :finished
       <<~HEREDOC
@@ -76,50 +93,51 @@ class Transaction
   end
 
   def input(text = nil)
+    @input = text
     case aasm.current_state
     when :idle, :no_product_selected, :invalid_product_selected, :product_sold_out
-      @product_code = text
       input_product_code
     when :awaiting_payment
-      begin
-        @coin = Coin.new(text)
-      rescue ArgumentError
-      end
       insert_coin
     end
   end
 
   def product_selected?
-    !@product_code.nil?
+    !@input.nil?
   end
 
   def product_valid?
-    !@machine.products[@product_code - 1].nil?
+    !@machine.products[@input - 1].nil?
   end
 
   def product_in_stock?
-    @machine.products[@product_code - 1].quantity.positive?
+    @machine.products[@input - 1].quantity.positive?
   end
 
   def select_product
-    @selected_product = @machine.products[@product_code - 1]
+    @selected_product = @machine.products[@input - 1]
     @balance -= @selected_product.price
   end
 
-  def paid?
-    @errors = ['You must enter a valid coin denomination']
-    return false unless @coin
-    @balance += @coin.denomination
-
-    if @balance.positive?
-      # Return change
-    elsif @balance.zero?
-      # Exact change
-      @machine.vend(@selected_product)
-      true
-    else
-      # Not enough change given yet
-      false
+  def coin_valid?
+    begin
+      @coin = Coin.new(@input)
+    rescue ArgumentError
+      return false
     end
+    true
+  end
+
+  def paid?
+    update_balance
+    @balance.positive? || @balance.zero?
+  end
+
+  def require_change?
+    @balance.positive?
+  end
+
+  def update_balance
+    @balance += @coin.denomination
   end
 end
