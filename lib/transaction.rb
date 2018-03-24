@@ -46,7 +46,7 @@ class Transaction
       HEREDOC
     when :finished
       <<~HEREDOC
-        You have recieved a #{@selected_product.name}.
+        You have received a #{@selected_product.name}.
       HEREDOC
     end
   end
