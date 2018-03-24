@@ -29,7 +29,7 @@ describe Transaction do
     end
   end
 
-  describe 'validation' do
+  describe 'product selection validation' do
     it 'will not accept invalid product codes' do
       @transaction.input(999)
       expected = 'Product with code 999 does not exist'
@@ -39,6 +39,17 @@ describe Transaction do
     it 'will tell you if a product has ran out' do
       @transaction.input(3)
       expected = 'Product chocolate three has ran out'
+      assert(@transaction.prompt.include?(expected))
+    end
+  end
+
+  describe 'coin input validation' do
+    it 'will not accept an invalid coin denomination' do
+      # Select first product
+      @transaction.input(1)
+      # Insert an invalid coin (6p)
+      @transaction.input(6)
+      expected = 'You must enter a valid coin denomination'
       assert(@transaction.prompt.include?(expected))
     end
   end

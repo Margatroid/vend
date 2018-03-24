@@ -16,7 +16,7 @@ class Transaction
     end
 
     event :insert_coin do
-      transitions from: :awaiting_payment, to: :idle, guard: :has_paid?
+      transitions from: :awaiting_payment, to: :idle, guard: :paid?
     end
   end
 
@@ -48,7 +48,7 @@ class Transaction
         #{@errors.slice(0, @errors.length).join("\n")}
         You have selected #{@selected_product.name} which costs #{@selected_product.price}.
         You have paid #{@balance + @selected_product.price} so far.
-        Enter a coin denomination in pence (#{Coin.valid_denominations.join(', ')}) to pay:
+        Enter a coin denomination in pence (#{Coin::VALID_DENOMINATIONS.join(', ')}) to pay:
       HEREDOC
     end
   end
@@ -59,7 +59,10 @@ class Transaction
       @product_code = text
       select_product
     when :awaiting_payment
-      @coin = Coin.valid_denominations.includes?(text) ? Coin.new(text) : nil
+      begin
+        @coin = Coin.new(text)
+      rescue ArgumentError
+      end
       insert_coin
     end
   end
@@ -88,6 +91,8 @@ class Transaction
 
     if @balance.positive?
       # Return change
+    elsif @balance.zero?
+      # Vend
     else
       # Transition to next state as the user has paid.
     end
