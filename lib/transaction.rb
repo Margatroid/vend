@@ -27,13 +27,6 @@ class Transaction
     @errors = []
   end
 
-  def prompt_product
-    puts 'This vending machine contains the following products:'
-    puts @machine.print_products
-    puts 'Please enter the code of the product that you want:'
-    true
-  end
-
   # Display prompt for current state
   def prompt
     case aasm.current_state
@@ -97,9 +90,11 @@ class Transaction
     if @balance.positive?
       # Return change
     elsif @balance.zero?
+      # Exact change
       @machine.vend(@selected_product)
       true
     else
+      # Not enough change given yet
       false
     end
   end
