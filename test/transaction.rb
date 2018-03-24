@@ -26,6 +26,14 @@ describe Transaction do
       assert(@transaction.prompt.include?(expected))
       not_expected = 'does not exist'
       refute(@transaction.prompt.include?(not_expected))
+
+      @transaction.input(50)
+      expected = 'You have paid 50 so far'
+      assert(@transaction.prompt.include?(expected))
+
+      @transaction.input(1)
+      expected = 'You have recieved a chocolate two'
+      assert(@transaction.prompt.include?(expected))
     end
   end
 

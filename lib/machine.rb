@@ -20,4 +20,6 @@ class Machine
   def create_transaction
     Transaction.new(self)
   end
+
+  def vend(product) end
 end

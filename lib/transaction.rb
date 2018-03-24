@@ -10,13 +10,14 @@ class Transaction
   aasm whiny_transitions: false do
     state :idle, initial: true
     state :awaiting_payment
+    state :finished
 
     event :select_product do
       transitions from: :idle, to: :awaiting_payment, guard: :product_selected?
     end
 
     event :insert_coin do
-      transitions from: :awaiting_payment, to: :idle, guard: :paid?
+      transitions from: :awaiting_payment, to: :finished, guard: :paid?
     end
   end
 
@@ -49,6 +50,10 @@ class Transaction
         You have selected #{@selected_product.name} which costs #{@selected_product.price}.
         You have paid #{@balance + @selected_product.price} so far.
         Enter a coin denomination in pence (#{Coin::VALID_DENOMINATIONS.join(', ')}) to pay:
+      HEREDOC
+    when :finished
+      <<~HEREDOC
+        You have recieved a #{@selected_product.name}.
       HEREDOC
     end
   end
@@ -92,9 +97,10 @@ class Transaction
     if @balance.positive?
       # Return change
     elsif @balance.zero?
-      # Vend
+      @machine.vend(@selected_product)
+      true
     else
-      # Transition to next state as the user has paid.
+      false
     end
   end
 end
