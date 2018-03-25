@@ -27,5 +27,7 @@ class Machine
     Transaction.new(self)
   end
 
-  def vend(product) end
+  def vend(product, coins)
+    product.quantity -= 1
+  end
 end

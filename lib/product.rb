@@ -1,6 +1,7 @@
 # A single product
 class Product
-  attr_reader :name, :price, :quantity
+  attr_reader :name, :price
+  attr_accessor :quantity
 
   def initialize(name, price, quantity)
     @name = name

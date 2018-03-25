@@ -44,4 +44,29 @@ describe Machine do
       refute(@machine.product_in_stock?(3))
     end
   end
+
+  describe 'vending process' do
+    before do
+      products_to_load = [Product.new('a', 50, 1)]
+      coins_to_load = [Coin.new(50, 5), Coin.new(2, 5000)]
+      @machine = Machine.new(products_to_load, coins_to_load)
+    end
+
+    it 'will vend the product from itself' do
+      product_code = 1
+      assert(@machine.product_in_stock?(product_code))
+      product = @machine.product_by_code(product_code)
+      @machine.vend(product, [Coin.new(50, 1)])
+      refute(@machine.product_in_stock?(1))
+    end
+
+    it 'will refuse to vend when insufficient funds have been inserted' do
+    end
+
+    it 'will give change' do
+    end
+
+    it 'will refuse to vend when product is out of stock' do
+    end
+  end
 end
