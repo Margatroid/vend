@@ -63,8 +63,7 @@ describe Machine do
     end
 
     it 'will refuse to vend when insufficient funds have been inserted' do
-      product_code = 1
-      product = @machine.product_by_code(product_code)
+      product = @machine.product_by_code(1)
       assert_raises InsufficientFunds do
         @machine.vend(product, [Coin.new(20, 1)])
       end
@@ -72,8 +71,7 @@ describe Machine do
     end
 
     it 'will refuse to vend when product is out of stock' do
-      product_code = 2
-      product = @machine.product_by_code(product_code)
+      product = @machine.product_by_code(2)
       assert_raises OutOfStock do
         @machine.vend(product, [Coin.new(20, 1)])
       end
@@ -81,6 +79,14 @@ describe Machine do
     end
 
     it 'will give change' do
+      product = @machine.product_by_code(1)
+      status = @machine.vend(product, [Coin.new(100, 1)])
+      assert(status[:success])
+
+      change = status[:change]
+      assert_equal(1, change.length)
+      assert_equal(50, change.first.denomination)
+      assert_equal(1, change.first.quantity)
     end
   end
 end

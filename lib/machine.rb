@@ -32,6 +32,14 @@ class Machine
     raise OutOfStock unless product.quantity.positive?
     raise InsufficientFunds if sum < product.price
 
+    total_change_pool = coins.concat(@coins)
     product.quantity -= 1
+
+    change = []
+    if sum > product.price
+      change = Coin.change(total_change_pool, sum - product.price)
+    end
+
+    { change: change, success: true }
   end
 end

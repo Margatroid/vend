@@ -22,3 +22,37 @@ describe Coin do
     end
   end
 end
+
+describe 'change' do
+  before do
+    @pool = [
+      Coin.new(10, 1),
+      Coin.new(5, 5),
+      Coin.new(2, 0),
+      Coin.new(1, 1)
+    ]
+  end
+
+  it 'will calculate change' do
+    change = Coin.change(@pool, 6)
+    assert_equal(2, change.length)
+    assert_equal(6, Coin.sum(change))
+  end
+
+  it 'can handle zero' do
+    assert_empty(Coin.change(@pool, 0))
+  end
+
+  it 'can give out several of the same denomination' do
+    pool = [
+      Coin.new(100, 1),
+      Coin.new(50, 0),
+      Coin.new(10, 6),
+      Coin.new(1, 1000)
+    ]
+    change = Coin.change(pool, 50)
+
+    assert_equal(5, change.length)
+    change.each { |coin| assert_equal(10, coin.denomination) }
+  end
+end
