@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'exceptions/insufficient_change'
+
 # A single coin
 class Coin
   attr_reader :denomination
@@ -46,6 +48,8 @@ class Coin
         change_to_give.push(Coin.new(coin.denomination, 1))
       end
     end
+
+    raise InsufficientChange if change_amount.positive?
 
     change_to_give
   end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'coin'
+require 'exceptions/insufficient_change'
 require 'minitest/autorun'
 
 describe Coin do
@@ -41,6 +42,12 @@ describe 'change' do
 
   it 'can handle zero' do
     assert_empty(Coin.change(@pool, 0))
+  end
+
+  it 'will raise an error if there is not enough change available' do
+    assert_raises InsufficientChange do
+      Coin.change(@pool, 2000)
+    end
   end
 
   it 'can give out several of the same denomination' do
