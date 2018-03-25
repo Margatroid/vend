@@ -5,7 +5,7 @@ require 'minitest/autorun'
 
 describe Prompt do
   it 'starts and takes user input' do
-    prompt = Prompt.new
+    prompt = Prompt.new(-> { 4 }, -> {})
     assert_output(/Welcome/) do
       prompt.start
     end
