@@ -29,6 +29,7 @@ class Machine
 
   def vend(product, coins)
     sum = Coin.sum(coins)
+    raise OutOfStock unless product.quantity.positive?
     raise InsufficientFunds if sum < product.price
 
     product.quantity -= 1

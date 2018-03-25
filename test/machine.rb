@@ -5,6 +5,7 @@ require 'product'
 require 'transaction'
 require 'minitest/autorun'
 require 'exceptions/insufficient_funds'
+require 'exceptions/out_of_stock'
 
 describe Machine do
   before do
@@ -48,7 +49,7 @@ describe Machine do
 
   describe 'vending process' do
     before do
-      products_to_load = [Product.new('a', 50, 1)]
+      products_to_load = [Product.new('a', 50, 1), Product.new('b', 100, 0)]
       coins_to_load = [Coin.new(50, 5), Coin.new(2, 5000)]
       @machine = Machine.new(products_to_load, coins_to_load)
     end
@@ -70,10 +71,16 @@ describe Machine do
       assert(@machine.product_in_stock?(1))
     end
 
-    it 'will give change' do
+    it 'will refuse to vend when product is out of stock' do
+      product_code = 2
+      product = @machine.product_by_code(product_code)
+      assert_raises OutOfStock do
+        @machine.vend(product, [Coin.new(20, 1)])
+      end
+      assert(@machine.product_in_stock?(1))
     end
 
-    it 'will refuse to vend when product is out of stock' do
+    it 'will give change' do
     end
   end
 end
