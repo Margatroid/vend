@@ -38,7 +38,6 @@ class Transaction
 
   def initialize(machine)
     @machine = machine
-    @balance = 0
     @coins = []
   end
 
@@ -74,12 +73,12 @@ class Transaction
     when :awaiting_payment
       <<~HEREDOC
         You have selected #{@selected_product.name} which costs #{@selected_product.price}.
-        You have paid #{@balance + @selected_product.price} so far.
+        You have paid #{coins_inserted_total} so far.
         Enter a coin denomination in pence (#{Coin::VALID_DENOMINATIONS.join(', ')}) to pay:
       HEREDOC
     when :paid_with_change
       <<~HEREDOC
-        You have received #{@balance} in change.
+        You have received #{coins_inserted_total - @selected_product.price} in change.
         An item has been vended.
       HEREDOC
     when :paid_exact
@@ -117,7 +116,6 @@ class Transaction
 
   def select_product
     @selected_product = @machine.product_by_code(@input)
-    @balance -= @selected_product.price
   end
 
   def coin_valid?
@@ -131,15 +129,17 @@ class Transaction
   end
 
   def paid?
-    update_balance
-    @balance.positive? || @balance.zero?
+    coins_inserted_total >= @selected_product.price
   end
 
   def require_change?
-    @balance.positive?
+    coins_inserted_total > @selected_product.price
   end
 
-  def update_balance
-    @balance += @coin.denomination
+  # Calculate how much has been inserted so far
+  def coins_inserted_total
+    @coins.inject(0) do |sum, coin|
+      sum + (coin.denomination * coin.quantity)
+    end
   end
 end
