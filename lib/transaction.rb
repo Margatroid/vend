@@ -17,7 +17,6 @@ class Transaction
     state :awaiting_payment
     state :paid_with_change
     state :paid_exact
-    state :finished
 
     event :input_product_code do
       from_states = %i[idle no_product_selected invalid_product_selected product_sold_out]
@@ -84,10 +83,6 @@ class Transaction
     when :paid_exact
       <<~HEREDOC
         An item has been vended.
-      HEREDOC
-    when :finished
-      <<~HEREDOC
-        You have received a #{@selected_product.name}.
       HEREDOC
     end
   end
