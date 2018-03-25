@@ -65,6 +65,7 @@ describe Transaction do
       @transaction.input(6)
       expected = 'You must enter a valid coin denomination'
       assert(@transaction.prompt.include?(expected))
+      assert_empty(@transaction.instance_variable_get(:@coins))
     end
   end
 
@@ -76,6 +77,7 @@ describe Transaction do
       @transaction.input(100)
       expected = 'You have received 50 in change'
       assert(@transaction.prompt.include?(expected))
+      assert_equal(1, @transaction.instance_variable_get(:@coins).length)
     end
   end
 end

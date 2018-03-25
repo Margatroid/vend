@@ -39,6 +39,7 @@ class Transaction
   def initialize(machine)
     @machine = machine
     @balance = 0
+    @coins = []
   end
 
   # Display prompt for current state
@@ -122,6 +123,7 @@ class Transaction
   def coin_valid?
     begin
       @coin = Coin.new(@input, 1)
+      @coins.push(@coin)
     rescue ArgumentError
       return false
     end
