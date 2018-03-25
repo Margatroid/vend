@@ -121,7 +121,7 @@ class Transaction
 
   def coin_valid?
     begin
-      @coin = Coin.new(@input)
+      @coin = Coin.new(@input, 1)
     rescue ArgumentError
       return false
     end
