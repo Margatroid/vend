@@ -28,6 +28,9 @@ class Machine
   end
 
   def vend(product, coins)
+    sum = Coin.sum(coins)
+    raise InsufficientFunds if sum < product.price
+
     product.quantity -= 1
   end
 end

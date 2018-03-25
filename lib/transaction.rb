@@ -138,8 +138,6 @@ class Transaction
 
   # Calculate how much has been inserted so far
   def coins_inserted_total
-    @coins.inject(0) do |sum, coin|
-      sum + (coin.denomination * coin.quantity)
-    end
+    Coin.sum(@coins)
   end
 end

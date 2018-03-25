@@ -15,4 +15,10 @@ class Coin
     @denomination = denomination
     @quantity = quantity
   end
+
+  def self.sum(coins)
+    coins.inject(0) do |sum, coin|
+      sum + (coin.denomination * coin.quantity)
+    end
+  end
 end

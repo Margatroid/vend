@@ -4,6 +4,7 @@ require 'machine'
 require 'product'
 require 'transaction'
 require 'minitest/autorun'
+require 'exceptions/insufficient_funds'
 
 describe Machine do
   before do
@@ -61,6 +62,12 @@ describe Machine do
     end
 
     it 'will refuse to vend when insufficient funds have been inserted' do
+      product_code = 1
+      product = @machine.product_by_code(product_code)
+      assert_raises InsufficientFunds do
+        @machine.vend(product, [Coin.new(20, 1)])
+      end
+      assert(@machine.product_in_stock?(1))
     end
 
     it 'will give change' do
