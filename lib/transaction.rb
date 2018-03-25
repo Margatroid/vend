@@ -78,7 +78,7 @@ class Transaction
       HEREDOC
     when :paid_with_change
       <<~HEREDOC
-        You have been offered #{@change} in change.
+        You have received #{@balance} in change.
         An item has been vended.
       HEREDOC
     when :paid_exact

@@ -67,4 +67,15 @@ describe Transaction do
       assert(@transaction.prompt.include?(expected))
     end
   end
+
+  describe 'giving change' do
+    it 'will give change' do
+      # Select first product
+      @transaction.input(1)
+      # Insert 1 pound coin
+      @transaction.input(100)
+      expected = 'You have received 50 in change'
+      assert(@transaction.prompt.include?(expected))
+    end
+  end
 end
