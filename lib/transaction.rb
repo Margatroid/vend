@@ -107,15 +107,15 @@ class Transaction
   end
 
   def product_valid?
-    !@machine.products[@input - 1].nil?
+    !@machine.product_by_code(@input).nil?
   end
 
   def product_in_stock?
-    @machine.products[@input - 1].quantity.positive?
+    @machine.product_in_stock?(@input)
   end
 
   def select_product
-    @selected_product = @machine.products[@input - 1]
+    @selected_product = @machine.product_by_code(@input)
     @balance -= @selected_product.price
   end
 

@@ -2,8 +2,6 @@
 
 # A vending machine
 class Machine
-  attr_reader :products, :coins
-
   def initialize(products, coins)
     @products = products
     @coins = coins
@@ -15,6 +13,14 @@ class Machine
       "Qty: #{product.quantity} Price: #{product.price}"
     end
     p.join("\n")
+  end
+
+  def product_by_code(code)
+    @products[code - 1]
+  end
+
+  def product_in_stock?(code)
+    @products[code - 1].quantity.positive?
   end
 
   def create_transaction
