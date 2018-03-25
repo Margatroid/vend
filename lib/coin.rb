@@ -51,6 +51,6 @@ class Coin
 
     raise InsufficientChange if change_amount.positive?
 
-    change_to_give
+    { change_coins: change_to_give, pool: pool }
   end
 end

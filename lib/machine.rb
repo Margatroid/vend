@@ -2,6 +2,8 @@
 
 # A vending machine
 class Machine
+  attr_reader :coins
+
   def initialize(products, coins)
     @products = products
     @coins = coins
@@ -37,7 +39,11 @@ class Machine
 
     change = []
     if sum > product.price
-      change = Coin.change(total_change_pool, sum - product.price)
+      result = Coin.change(total_change_pool, sum - product.price)
+      # The actual coins that represent the change to be given out.
+      change = result[:change_coins]
+      # Update machine's total coin pool after change has been given.
+      @coins = result[:pool]
     end
 
     { change: change, success: true }

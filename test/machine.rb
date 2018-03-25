@@ -50,7 +50,7 @@ describe Machine do
   describe 'vending process' do
     before do
       products_to_load = [Product.new('a', 50, 1), Product.new('b', 100, 0)]
-      coins_to_load = [Coin.new(50, 5), Coin.new(2, 5000)]
+      coins_to_load = [Coin.new(50, 5), Coin.new(2, 5)]
       @machine = Machine.new(products_to_load, coins_to_load)
     end
 
@@ -77,8 +77,18 @@ describe Machine do
       end
       assert(@machine.product_in_stock?(1))
     end
+  end
+
+  describe 'giving change' do
+    before do
+      products_to_load = [Product.new('a', 50, 1)]
+      coins_to_load = [Coin.new(50, 2)]
+      @machine = Machine.new(products_to_load, coins_to_load)
+    end
 
     it 'will give change' do
+      assert_equal(100, Coin.sum(@machine.coins))
+
       product = @machine.product_by_code(1)
       status = @machine.vend(product, [Coin.new(100, 1)])
       assert(status[:success])
@@ -87,6 +97,9 @@ describe Machine do
       assert_equal(1, change.length)
       assert_equal(50, change.first.denomination)
       assert_equal(1, change.first.quantity)
+
+      # 100 initial load + 100 inserted - 50 change returned
+      assert_equal(100 + 100 - 50, Coin.sum(@machine.coins))
     end
   end
 end

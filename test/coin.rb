@@ -35,13 +35,14 @@ describe 'change' do
   end
 
   it 'will calculate change' do
-    change = Coin.change(@pool, 6)
+    result = Coin.change(@pool, 6)
+    change = result[:change_coins]
     assert_equal(2, change.length)
     assert_equal(6, Coin.sum(change))
   end
 
   it 'can handle zero' do
-    assert_empty(Coin.change(@pool, 0))
+    assert_empty(Coin.change(@pool, 0)[:change_coins])
   end
 
   it 'will raise an error if there is not enough change available' do
@@ -57,7 +58,8 @@ describe 'change' do
       Coin.new(10, 6),
       Coin.new(1, 1000)
     ]
-    change = Coin.change(pool, 50)
+    result = Coin.change(pool, 50)
+    change = result[:change_coins]
 
     assert_equal(5, change.length)
     change.each { |coin| assert_equal(10, coin.denomination) }
