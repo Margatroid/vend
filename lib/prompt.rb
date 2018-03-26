@@ -4,8 +4,14 @@ require 'machine'
 require 'product'
 require 'coin'
 
-$stdin = ->{ STDIN.gets.chomp.to_i }
-$exit = ->{ exit(true) }
+$stdin = lambda do
+  print '> '
+  input = STDIN.gets.chomp.to_i
+  puts "\n"
+  input
+end
+
+$exit = -> { exit(true) }
 
 # User interface
 class Prompt

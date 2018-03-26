@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'transaction'
+
 # A vending machine
 class Machine
   attr_reader :coins
