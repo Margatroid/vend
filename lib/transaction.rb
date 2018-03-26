@@ -92,7 +92,7 @@ class Transaction
     case aasm.current_state
     when :idle, :no_product_selected, :invalid_product_selected, :product_sold_out
       input_product_code
-    when :awaiting_payment
+    when :awaiting_payment, :invalid_coin_inserted
       insert_coin
     end
   end
