@@ -30,8 +30,8 @@ class Transaction
       from_states = %i[awaiting_payment invalid_coin_inserted]
       transitions from: from_states, to: :invalid_coin_inserted, unless: :coin_valid?
       transitions from: from_states, to: :awaiting_payment, unless: :paid?
-      transitions from: from_states, to: :paid_with_change, if: :require_change?
-      transitions from: from_states, to: :paid_exact
+      transitions from: from_states, to: :paid_with_change, if: :require_change?, after: :vend
+      transitions from: from_states, to: :paid_exact, after: :vend
     end
   end
 
@@ -77,7 +77,7 @@ class Transaction
       HEREDOC
     when :paid_with_change
       <<~HEREDOC
-        You have received #{coins_inserted_total - @selected_product.price} in change.
+        You have received #{Coin.sum(@change)} in change.
         An item has been vended.
       HEREDOC
     when :paid_exact
@@ -96,6 +96,8 @@ class Transaction
       insert_coin
     end
   end
+
+  private
 
   def product_selected?
     !@input.nil?
@@ -129,6 +131,11 @@ class Transaction
 
   def require_change?
     coins_inserted_total > @selected_product.price
+  end
+
+  def vend
+    result = @machine.vend(@selected_product, @coins)
+    @change = result[:change]
   end
 
   # Calculate how much has been inserted so far

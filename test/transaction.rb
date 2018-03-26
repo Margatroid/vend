@@ -12,7 +12,7 @@ describe Transaction do
       Product.new('chocolate three', 52, 0)
     ]
 
-    @machine = Machine.new(products_to_load, [])
+    @machine = Machine.new(products_to_load, [Coin.new(50, 1)])
     @transaction = @machine.create_transaction
   end
 
@@ -81,7 +81,7 @@ describe Transaction do
       @transaction.input(100)
       expected = 'You have received 50 in change'
       assert(@transaction.prompt.include?(expected))
-      assert_equal(1, @transaction.instance_variable_get(:@coins).length)
+      assert_equal(1, @transaction.instance_variable_get(:@change).length)
     end
   end
 end
