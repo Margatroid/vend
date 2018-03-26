@@ -19,6 +19,13 @@ class Machine
     p.join("\n")
   end
 
+  def formatted_coins
+    c = @coins.map do |coin|
+      "Denomination: #{coin.denomination} Qty: #{coin.quantity}"
+    end
+    c.join("\n")
+  end
+
   def product_by_code(code)
     @products[code - 1]
   end

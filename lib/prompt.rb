@@ -61,11 +61,19 @@ class Prompt
     when 1
       buy
     when 2
-      puts 'To be implemented'
-      @exit.call
+      puts <<~HEREDOC
+        Machine status:
+        #{@machine.formatted_products}
+
+        Coin status:
+        #{@machine.formatted_coins}
+
+      HEREDOC
+      menu
     when 3
-      puts 'To be implemented'
-      @exit.call
+      puts "To be implemented"
+      puts
+      menu
     when 4
       @exit.call
     end
