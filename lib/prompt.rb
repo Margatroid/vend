@@ -24,15 +24,27 @@ class Prompt
   def start
     products = [
       Product.new("Peanut M&M's", 120, 10),
-      Product.new("Lindt", 180, 5),
-      Product.new("Kitkat", 150, 20)
+      Product.new('Lindt', 180, 5),
+      Product.new('Kitkat', 150, 20)
     ]
 
     coins = Coin::VALID_DENOMINATIONS.map do |denomination|
       Coin.new(denomination, 10)
     end
 
-    machine = Machine.new(products, coins)
+    @machine = Machine.new(products, coins)
+    menu
+  end
+
+  def buy
+    transaction = @machine.create_transaction
+
+    puts transaction.prompt
+    until transaction.paid_with_change? || transaction.paid_exact?
+      transaction.input(@input.call)
+      puts transaction.prompt
+    end
+
     menu
   end
 
@@ -49,7 +61,11 @@ class Prompt
     when 1
       buy
     when 2
+      puts 'To be implemented'
+      @exit.call
     when 3
+      puts 'To be implemented'
+      @exit.call
     when 4
       @exit.call
     end
